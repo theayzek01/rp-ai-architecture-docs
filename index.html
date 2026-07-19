@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RP AI — Sistem Mimarisi & Prompt Dokümantasyonu</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #0a0a14;
+  --bg-secondary: #12121f;
+  --bg-card: #1a1a2e;
+  --bg-card-hover: #222240;
+  --accent-red: #e63946;
+  --accent-gold: #f0a500;
+  --accent-purple: #7b2d8e;
+  --text-primary: #e8e8f0;
+  --text-secondary: #9898b0;
+  --text-muted: #686888;
+  --border-color: #2a2a4a;
+  --jp-red: #bc002d;
+  --jp-gold: #d4a017;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Japanese decorative background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(188, 0, 45, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(123, 45, 142, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(212, 160, 23, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 20, 0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.header-logo {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--jp-red);
+  letter-spacing: 2px;
+}
+
+.header-logo span {
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+.header-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .header-title { display: block; }
+}
+
+/* Language Switcher */
+.lang-switcher {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid var(--border-color);
+}
+
+.lang-btn {
+  font-family: 'Noto Sans JP', sans-serif;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+.lang-btn:hover {
+  color: var(--text-primary);
+}
+
+.lang-btn.active {
+  background: var(--jp-red);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(188, 0, 45, 0.4);
+}
+
+/* Hero */
+.hero {
+  margin-top: 64px;
+  padding: 60px 24px 40px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(188, 0, 45, 0.08) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.hero-badge {
+  display: inline-block;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--jp-gold);
+  background: rgba(212, 160, 23, 0.1);
+  border: 1px solid rgba(212, 160, 23, 0.3);
+  padding: 4px 16px;
+  border-radius: 20px;
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: clamp(24px, 5vw, 42px);
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #fff 0%, var(--jp-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.hero-meta {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-meta span {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-meta .dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--jp-red);
+  display: inline-block;
+}
+
+/* Main Content */
+.main-content {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.content-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 40px;
+}
+
+/* Markdown Content Styles */
+.content-card h1,
+.content-card h2,
+.content-card h3,
+.content-card h4 {
+  font-family: 'Noto Sans JP', sans-serif;
+  color: var(--text-primary);
+  margin-top: 1.8em;
+  margin-bottom: 0.6em;
+  line-height: 1.3;
+}
+
+.content-card h1:first-child,
+.content-card h2:first-child {
+  margin-top: 0;
+}
+
+.content-card h1 {
+  font-size: 28px;
+  font-weight: 900;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--jp-red);
+}
+
+.content-card h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--jp-gold);
+  padding-left: 12px;
+  border-left: 3px solid var(--jp-red);
+}
+
+.content-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-purple);
+}
+
+.content-card p {
+  margin-bottom: 1em;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.content-card strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.content-card em {
+  color: var(--accent-gold);
+}
+
+.content-card a {
+  color: var(--jp-red);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.content-card a:hover {
+  border-bottom-color: var(--jp-red);
+}
+
+.content-card ul,
+.content-card ol {
+  margin: 1em 0;
+  padding-left: 24px;
+  color: var(--text-secondary);
+}
+
+.content-card li {
+  margin-bottom: 0.5em;
+  font-size: 15px;
+}
+
+.content-card li strong {
+  color: var(--text-primary);
+}
+
+.content-card hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 2em 0;
+}
+
+/* Code Blocks */
+.content-card code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  background: rgba(188, 0, 45, 0.1);
+  color: var(--accent-gold);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.content-card pre {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  overflow-x: auto;
+  margin: 1.2em 0;
+}
+
+.content-card pre code {
+  background: none;
+  color: var(--text-primary);
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Tables */
+.content-card table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2em 0;
+  font-size: 14px;
+}
+
+.content-card th {
+  background: var(--bg-secondary);
+  color: var(--jp-gold);
+  font-weight: 600;
+  padding: 10px 14px;
+  text-align: left;
+  border: 1px solid var(--border-color);
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+.content-card td {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.content-card tr:hover td {
+  background: var(--bg-card-hover);
+}
+
+/* Blockquotes */
+.content-card blockquote {
+  border-left: 3px solid var(--jp-red);
+  padding: 12px 20px;
+  margin: 1.2em 0;
+  background: rgba(188, 0, 45, 0.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--text-secondary);
+}
+
+.content-card blockquote strong {
+  color: var(--text-primary);
+}
+
+/* Checklists */
+.content-card input[type="checkbox"] {
+  accent-color: var(--jp-red);
+  margin-right: 8px;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+
+.loading-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--jp-red);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Footer */
+.footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 32px 24px;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.footer a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  color: var(--jp-red);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content-card { padding: 20px; }
+  .hero { padding: 40px 16px 30px; }
+  .main-content { padding: 20px 12px 60px; }
+  .header { padding: 0 16px; }
+  .content-card table { font-size: 12px; }
+  .content-card th,
+  .content-card td { padding: 6px 8px; }
+  .content-card pre { padding: 12px; }
+}
+
+/* Japanese decorative elements */
+.hero::after {
+  content: '⚡';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  opacity: 0.5;
+}
+
+.lang-btn[data-lang="tr"]::before {
+  content: '🇯🇵 ';
+  font-size: 14px;
+}
+
+.lang-btn[data-lang="en"]::before {
+  content: '🌐 ';
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <a href="#" class="header-brand">
+    <span class="header-logo">RP <span>AI</span></span>
+    <span class="header-title">Sistem Mimarisi · System Architecture</span>
+  </a>
+  <div class="lang-switcher">
+    <button class="lang-btn active" data-lang="tr" onclick="switchLang('tr')">TR</button>
+    <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-badge" id="heroBadge">RP AI · MİMARİ</div>
+  <h1 id="heroTitle">RP Uygulaması —<br>Sistem Mimarisi & Prompt Dokümantasyonu</h1>
+  <p id="heroDesc">Gemini 2.5 Flash-Lite ile aşırı düşük maliyet + yüksek hız + tutarlı hafıza + döngüsüz RP deneyimi</p>
+  <div class="hero-meta">
+    <span><span class="dot"></span> <span id="heroLang">Türkçe</span></span>
+    <span><span class="dot"></span> 21 Bölüm</span>
+    <span><span class="dot"></span> Gemini 2.5</span>
+  </div>
+</section>
+
+<!-- Main Content -->
+<main class="main-content">
+  <div class="content-card" id="content">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <p>Doküman yükleniyor...</p>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>RP AI — Sistem Mimarisi & Prompt Dokümantasyonu &bull; <a href="https://github.com/theayzek01/rp-ai-architecture-docs" target="_blank">GitHub</a></p>
+</footer>
+
+<script>
+let currentLang = 'tr';
+
+const heroData = {
+  tr: {
+    badge: 'RP AI · MİMARİ',
+    title: 'RP Uygulaması —<br>Sistem Mimarisi & Prompt Dokümantasyonu',
+    desc: 'Gemini 2.5 Flash-Lite ile aşırı düşük maliyet + yüksek hız + tutarlı hafıza + döngüsüz RP deneyimi',
+    lang: 'Türkçe'
+  },
+  en: {
+    badge: 'RP AI · ARCHITECTURE',
+    title: 'RP Application —<br>System Architecture & Prompt Documentation',
+    desc: 'Ultra-low cost + high speed + consistent memory + loop-free RP experience with Gemini 2.5 Flash-Lite',
+    lang: 'English'
+  }
+};
+
+async function loadContent(lang) {
+  const contentEl = document.getElementById('content');
+  contentEl.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Doküman yükleniyor...</p></div>';
+
+  try {
+    const file = lang === 'tr' ? 'content/tr.md' : 'content/en.md';
+    const response = await fetch(file);
+    if (!response.ok) throw new Error('Dosya yüklenemedi');
+    const md = await response.text();
+
+    // Configure marked
+    marked.setOptions({
+      breaks: true,
+      gfm: true
+    });
+
+    const html = marked.parse(md);
+    contentEl.innerHTML = html;
+
+    // Update hero
+    const data = heroData[lang];
+    document.getElementById('heroBadge').textContent = data.badge;
+    document.getElementById('heroTitle').innerHTML = data.title;
+    document.getElementById('heroDesc').textContent = data.desc;
+    document.getElementById('heroLang').textContent = data.lang;
+
+    // Update HTML lang
+    document.documentElement.lang = lang;
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch (err) {
+    contentEl.innerHTML = `
+      <div style="text-align:center;padding:40px;color:var(--jp-red);">
+        <h2>Hata / Error</h2>
+        <p>Doküman yüklenirken bir hata oluştu.</p>
+        <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">${err.message}</p>
+      </div>
+    `;
+  }
+}
+
+function switchLang(lang) {
+  if (lang === currentLang) return;
+  currentLang = lang;
+
+  // Update buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  loadContent(lang);
+}
+
+// Load default language
+loadContent('tr');
+</script>
+
+</body>
+</html>
