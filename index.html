@@ -3,576 +3,498 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RP AI — Sistem Mimarisi & Prompt Dokümantasyonu</title>
+<title>RP AI — Sistem Mimarisi</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
-  --bg-primary: #0a0a14;
-  --bg-secondary: #12121f;
-  --bg-card: #1a1a2e;
-  --bg-card-hover: #222240;
-  --accent-red: #e63946;
-  --accent-gold: #f0a500;
-  --accent-purple: #7b2d8e;
-  --text-primary: #e8e8f0;
-  --text-secondary: #9898b0;
-  --text-muted: #686888;
-  --border-color: #2a2a4a;
-  --jp-red: #bc002d;
-  --jp-gold: #d4a017;
+  --bg: #0d0d1a;
+  --bg2: #141428;
+  --bg3: #1c1c38;
+  --bg4: #252550;
+  --text: #e0e0f0;
+  --text2: #a0a0c0;
+  --text3: #707090;
+  --border: #2a2a50;
+  --red: #bc0033;
+  --red2: #e63946;
+  --gold: #c8962e;
+  --gold2: #e8b84a;
+  --purple: #7b2d8e;
+  --sidebar-w: 280px;
+  --header-h: 56px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: var(--bg);
+  color: var(--text);
   line-height: 1.7;
-  overflow-x: hidden;
+  display: flex;
+  min-height: 100vh;
 }
 
-/* Japanese decorative background pattern */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-image:
-    radial-gradient(circle at 20% 50%, rgba(188, 0, 45, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(123, 45, 142, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 50% 80%, rgba(212, 160, 23, 0.02) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Header */
+/* HEADER */
 .header {
   position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 1000;
-  background: rgba(10, 10, 20, 0.92);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-color);
-  padding: 0 24px;
-  height: 64px;
+  top:0; left:0; right:0;
+  height: var(--header-h);
+  background: rgba(13,13,26,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 20px;
+  z-index: 100;
 }
 
-.header-brand {
+.header-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  text-decoration: none;
 }
 
-.header-logo {
+.logo {
   font-family: 'Noto Sans JP', sans-serif;
   font-weight: 900;
-  font-size: 20px;
-  color: var(--jp-red);
-  letter-spacing: 2px;
+  font-size: 18px;
+  color: var(--red);
 }
 
-.header-logo span {
-  color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
-  font-weight: 300;
-  font-size: 14px;
-  letter-spacing: 0;
-}
+.logo span { color: var(--text); font-weight:300; font-size:13px; font-family:'Inter',sans-serif; }
 
-.header-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  display: none;
-}
-
-@media (min-width: 768px) {
-  .header-title { display: block; }
-}
-
-/* Language Switcher */
-.lang-switcher {
+.lang-switch {
   display: flex;
-  gap: 2px;
-  background: var(--bg-card);
-  border-radius: 8px;
-  padding: 3px;
-  border: 1px solid var(--border-color);
+  background: var(--bg3);
+  border-radius: 6px;
+  padding: 2px;
+  border: 1px solid var(--border);
 }
 
 .lang-btn {
   font-family: 'Noto Sans JP', sans-serif;
-  padding: 6px 14px;
+  padding: 4px 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
   background: transparent;
-  color: var(--text-muted);
-  transition: all 0.3s ease;
-}
-
-.lang-btn:hover {
-  color: var(--text-primary);
+  color: var(--text3);
+  transition: all 0.2s;
 }
 
 .lang-btn.active {
-  background: var(--jp-red);
+  background: var(--red);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(188, 0, 45, 0.4);
 }
 
-/* Hero */
-.hero {
-  margin-top: 64px;
-  padding: 60px 24px 40px;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  background: linear-gradient(180deg, rgba(188, 0, 45, 0.08) 0%, transparent 100%);
-  border-bottom: 1px solid var(--border-color);
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 50;
+  padding: 16px 0;
 }
 
-.hero-badge {
-  display: inline-block;
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.toc-title {
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: var(--jp-gold);
-  background: rgba(212, 160, 23, 0.1);
-  border: 1px solid rgba(212, 160, 23, 0.3);
-  padding: 4px 16px;
-  border-radius: 20px;
-  letter-spacing: 3px;
-  margin-bottom: 16px;
+  color: var(--gold);
   text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 8px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
 }
 
-.hero h1 {
-  font-family: 'Noto Sans JP', sans-serif;
-  font-size: clamp(24px, 5vw, 42px);
-  font-weight: 900;
-  line-height: 1.2;
-  margin-bottom: 12px;
-  background: linear-gradient(135deg, #fff 0%, var(--jp-gold) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.toc-list { list-style: none; }
+
+.toc-item { border-bottom: 1px solid rgba(42,42,80,0.3); }
+
+.toc-link {
+  display: block;
+  padding: 7px 20px;
+  text-decoration: none;
+  font-size: 13px;
+  color: var(--text2);
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  cursor: pointer;
 }
 
-.hero p {
-  color: var(--text-secondary);
-  font-size: 15px;
-  max-width: 700px;
-  margin: 0 auto;
-  line-height: 1.6;
+.toc-link:hover {
+  color: var(--text);
+  background: rgba(188,0,51,0.05);
+  border-left-color: var(--red);
 }
 
-.hero-meta {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
+.toc-link.active {
+  color: var(--gold);
+  border-left-color: var(--gold);
+  background: rgba(200,150,46,0.05);
 }
 
-.hero-meta span {
-  font-size: 12px;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+.toc-link.h2 { padding-left: 20px; font-weight: 500; }
+.toc-link.h3 { padding-left: 36px; font-size: 12px; }
+.toc-link.h4 { padding-left: 52px; font-size: 11px; }
 
-.hero-meta .dot {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--jp-red);
-  display: inline-block;
-}
-
-/* Main Content */
-.main-content {
-  position: relative;
-  z-index: 1;
+/* MAIN */
+.main {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--header-h);
+  flex: 1;
+  padding: 32px 40px 80px;
   max-width: 960px;
-  margin: 0 auto;
-  padding: 40px 24px 80px;
 }
 
-.content-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 40px;
-}
+/* CONTENT */
+.content h1:first-child { margin-top: 0; }
 
-/* Markdown Content Styles */
-.content-card h1,
-.content-card h2,
-.content-card h3,
-.content-card h4 {
+.content h1, .content h2, .content h3, .content h4 {
   font-family: 'Noto Sans JP', sans-serif;
-  color: var(--text-primary);
-  margin-top: 1.8em;
-  margin-bottom: 0.6em;
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
   line-height: 1.3;
+  scroll-margin-top: 72px;
 }
 
-.content-card h1:first-child,
-.content-card h2:first-child {
-  margin-top: 0;
-}
-
-.content-card h1 {
-  font-size: 28px;
+.content h1 {
+  font-size: 26px;
   font-weight: 900;
   padding-bottom: 8px;
-  border-bottom: 2px solid var(--jp-red);
+  border-bottom: 2px solid var(--red);
+  color: var(--text);
 }
 
-.content-card h2 {
-  font-size: 22px;
+.content h2 {
+  font-size: 20px;
   font-weight: 700;
-  color: var(--jp-gold);
-  padding-left: 12px;
-  border-left: 3px solid var(--jp-red);
+  color: var(--gold);
+  padding-left: 10px;
+  border-left: 3px solid var(--red);
 }
 
-.content-card h3 {
-  font-size: 18px;
+.content h3 {
+  font-size: 16px;
   font-weight: 700;
-  color: var(--accent-purple);
+  color: var(--purple);
 }
 
-.content-card p {
-  margin-bottom: 1em;
-  color: var(--text-secondary);
-  font-size: 15px;
-}
-
-.content-card strong {
-  color: var(--text-primary);
+.content h4 {
+  font-size: 14px;
   font-weight: 600;
+  color: var(--text2);
 }
 
-.content-card em {
-  color: var(--accent-gold);
+.content p {
+  margin-bottom: 0.9em;
+  color: var(--text2);
+  font-size: 14px;
 }
 
-.content-card a {
-  color: var(--jp-red);
+.content strong { color: var(--text); font-weight:600; }
+.content em { color: var(--gold2); }
+
+.content a {
+  color: var(--red2);
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
 }
+.content a:hover { border-bottom-color: var(--red2); }
 
-.content-card a:hover {
-  border-bottom-color: var(--jp-red);
-}
-
-.content-card ul,
-.content-card ol {
-  margin: 1em 0;
+.content ul, .content ol {
+  margin: 0.8em 0;
   padding-left: 24px;
-  color: var(--text-secondary);
+  color: var(--text2);
+  font-size: 14px;
 }
+.content li { margin-bottom: 0.4em; }
 
-.content-card li {
-  margin-bottom: 0.5em;
-  font-size: 15px;
-}
-
-.content-card li strong {
-  color: var(--text-primary);
-}
-
-.content-card hr {
+.content hr {
   border: none;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border);
   margin: 2em 0;
 }
 
-/* Code Blocks */
-.content-card code {
+.content code {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 13px;
-  background: rgba(188, 0, 45, 0.1);
-  color: var(--accent-gold);
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: 12.5px;
+  background: rgba(188,0,51,0.1);
+  color: var(--gold2);
+  padding: 1px 5px;
+  border-radius: 3px;
 }
 
-.content-card pre {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+.content pre {
+  background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 20px;
+  padding: 16px 20px;
   overflow-x: auto;
-  margin: 1.2em 0;
+  margin: 1em 0;
 }
 
-.content-card pre code {
+.content pre code {
   background: none;
-  color: var(--text-primary);
+  color: var(--text);
   padding: 0;
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 12.5px;
+  line-height: 1.5;
 }
 
-/* Tables */
-.content-card table {
+.content table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1.2em 0;
-  font-size: 14px;
+  margin: 1em 0;
+  font-size: 13px;
 }
 
-.content-card th {
-  background: var(--bg-secondary);
-  color: var(--jp-gold);
+.content th {
+  background: var(--bg3);
+  color: var(--gold);
   font-weight: 600;
-  padding: 10px 14px;
+  padding: 8px 12px;
   text-align: left;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   font-family: 'Noto Sans JP', sans-serif;
 }
 
-.content-card td {
-  padding: 10px 14px;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
+.content td {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  color: var(--text2);
 }
 
-.content-card tr:hover td {
-  background: var(--bg-card-hover);
+.content tr:hover td { background: var(--bg3); }
+
+.content blockquote {
+  border-left: 3px solid var(--red);
+  padding: 10px 16px;
+  margin: 1em 0;
+  background: rgba(188,0,51,0.04);
+  border-radius: 0 6px 6px 0;
+  color: var(--text2);
+  font-size: 14px;
 }
 
-/* Blockquotes */
-.content-card blockquote {
-  border-left: 3px solid var(--jp-red);
-  padding: 12px 20px;
-  margin: 1.2em 0;
-  background: rgba(188, 0, 45, 0.05);
-  border-radius: 0 8px 8px 0;
-  color: var(--text-secondary);
+/* SIDEBAR TOGGLE (mobile) */
+.sidebar-toggle {
+  display: none;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 18px;
 }
 
-.content-card blockquote strong {
-  color: var(--text-primary);
-}
-
-/* Checklists */
-.content-card input[type="checkbox"] {
-  accent-color: var(--jp-red);
-  margin-right: 8px;
-}
-
-/* Loading */
+/* LOADING */
 .loading {
   text-align: center;
-  padding: 60px 20px;
-  color: var(--text-muted);
+  padding: 80px 20px;
 }
 
-.loading-spinner {
-  width: 40px; height: 40px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--jp-red);
+.spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--red);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 16px;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto 12px;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* Footer */
+/* FOOTER */
 .footer {
-  position: relative;
-  z-index: 1;
   text-align: center;
-  padding: 32px 24px;
-  border-top: 1px solid var(--border-color);
-  color: var(--text-muted);
+  padding: 24px;
+  margin-top: 40px;
+  border-top: 1px solid var(--border);
+  color: var(--text3);
   font-size: 12px;
 }
+.footer a { color: var(--text2); text-decoration: none; }
+.footer a:hover { color: var(--red); }
 
-.footer a {
-  color: var(--text-secondary);
-  text-decoration: none;
-}
-
-.footer a:hover {
-  color: var(--jp-red);
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-primary); }
-::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-
-/* Responsive */
-@media (max-width: 768px) {
-  .content-card { padding: 20px; }
-  .hero { padding: 40px 16px 30px; }
-  .main-content { padding: 20px 12px 60px; }
-  .header { padding: 0 16px; }
-  .content-card table { font-size: 12px; }
-  .content-card th,
-  .content-card td { padding: 6px 8px; }
-  .content-card pre { padding: 12px; }
-}
-
-/* Japanese decorative elements */
-.hero::after {
-  content: '⚡';
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 24px;
-  opacity: 0.5;
-}
-
-.lang-btn[data-lang="tr"]::before {
-  content: '🇯🇵 ';
-  font-size: 14px;
-}
-
-.lang-btn[data-lang="en"]::before {
-  content: '🌐 ';
-  font-size: 14px;
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    width: 260px;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-toggle { display: block; }
+  .main {
+    margin-left: 0;
+    padding: 24px 16px 60px;
+  }
 }
 </style>
 </head>
 <body>
 
-<!-- Header -->
+<!-- HEADER -->
 <header class="header">
-  <a href="#" class="header-brand">
-    <span class="header-logo">RP <span>AI</span></span>
-    <span class="header-title">Sistem Mimarisi · System Architecture</span>
-  </a>
-  <div class="lang-switcher">
+  <div class="header-left">
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+    <span class="logo">RP <span>AI</span></span>
+  </div>
+  <div class="lang-switch">
     <button class="lang-btn active" data-lang="tr" onclick="switchLang('tr')">TR</button>
     <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
   </div>
 </header>
 
-<!-- Hero -->
-<section class="hero" id="hero">
-  <div class="hero-badge" id="heroBadge">RP AI · MİMARİ</div>
-  <h1 id="heroTitle">RP Uygulaması —<br>Sistem Mimarisi & Prompt Dokümantasyonu</h1>
-  <p id="heroDesc">Gemini 2.5 Flash-Lite ile aşırı düşük maliyet + yüksek hız + tutarlı hafıza + döngüsüz RP deneyimi</p>
-  <div class="hero-meta">
-    <span><span class="dot"></span> <span id="heroLang">Türkçe</span></span>
-    <span><span class="dot"></span> 21 Bölüm</span>
-    <span><span class="dot"></span> Gemini 2.5</span>
-  </div>
-</section>
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="toc-title" id="tocTitle">İÇİNDEKİLER</div>
+  <ul class="toc-list" id="toc"></ul>
+</nav>
 
-<!-- Main Content -->
-<main class="main-content">
-  <div class="content-card" id="content">
+<!-- MAIN -->
+<main class="main">
+  <div class="content" id="content">
     <div class="loading">
-      <div class="loading-spinner"></div>
-      <p>Doküman yükleniyor...</p>
+      <div class="spinner"></div>
+      <p style="color:var(--text3);font-size:14px;">Yükleniyor...</p>
     </div>
+  </div>
+  <div class="footer">
+    RP AI &bull; <a href="https://github.com/theayzek01/rp-ai-architecture-docs" target="_blank">GitHub</a>
   </div>
 </main>
 
-<!-- Footer -->
-<footer class="footer">
-  <p>RP AI — Sistem Mimarisi & Prompt Dokümantasyonu &bull; <a href="https://github.com/theayzek01/rp-ai-architecture-docs" target="_blank">GitHub</a></p>
-</footer>
-
 <script>
 let currentLang = 'tr';
+let tocData = [];
 
-const heroData = {
-  tr: {
-    badge: 'RP AI · MİMARİ',
-    title: 'RP Uygulaması —<br>Sistem Mimarisi & Prompt Dokümantasyonu',
-    desc: 'Gemini 2.5 Flash-Lite ile aşırı düşük maliyet + yüksek hız + tutarlı hafıza + döngüsüz RP deneyimi',
-    lang: 'Türkçe'
-  },
-  en: {
-    badge: 'RP AI · ARCHITECTURE',
-    title: 'RP Application —<br>System Architecture & Prompt Documentation',
-    desc: 'Ultra-low cost + high speed + consistent memory + loop-free RP experience with Gemini 2.5 Flash-Lite',
-    lang: 'English'
-  }
+marked.setOptions({ breaks: true, gfm: true });
+
+const renderer = new marked.Renderer();
+const origHeading = renderer.heading.bind(renderer);
+renderer.heading = function(text, level, raw) {
+  const id = 's-' + raw.toLowerCase()
+    .replace(/[^a-z0-9çğıöşüa-z ]/gi, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+  return `<h${level} id="${id}">${text}</h${level}>`;
 };
 
+marked.use({ renderer });
+
 async function loadContent(lang) {
-  const contentEl = document.getElementById('content');
-  contentEl.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Doküman yükleniyor...</p></div>';
+  const el = document.getElementById('content');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><p style="color:var(--text3);font-size:14px;">Yükleniyor...</p></div>';
 
   try {
     const file = lang === 'tr' ? 'content/tr.md' : 'content/en.md';
-    const response = await fetch(file);
-    if (!response.ok) throw new Error('Dosya yüklenemedi');
-    const md = await response.text();
-
-    // Configure marked
-    marked.setOptions({
-      breaks: true,
-      gfm: true
-    });
-
+    const res = await fetch(file + '?t=' + Date.now());
+    if (!res.ok) throw Error('HTTP ' + res.status);
+    const md = await res.text();
     const html = marked.parse(md);
-    contentEl.innerHTML = html;
+    el.innerHTML = html;
 
-    // Update hero
-    const data = heroData[lang];
-    document.getElementById('heroBadge').textContent = data.badge;
-    document.getElementById('heroTitle').innerHTML = data.title;
-    document.getElementById('heroDesc').textContent = data.desc;
-    document.getElementById('heroLang').textContent = data.lang;
-
-    // Update HTML lang
+    buildTOC(lang);
     document.documentElement.lang = lang;
+    updateActiveSection();
 
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('tocTitle').textContent =
+      lang === 'tr' ? 'İÇİNDEKİLER' : 'CONTENTS';
 
-  } catch (err) {
-    contentEl.innerHTML = `
-      <div style="text-align:center;padding:40px;color:var(--jp-red);">
-        <h2>Hata / Error</h2>
-        <p>Doküman yüklenirken bir hata oluştu.</p>
-        <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">${err.message}</p>
-      </div>
-    `;
+  } catch (e) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--red2);"><h2>Hata</h2><p style="color:var(--text3);font-size:13px;">'+e.message+'</p></div>';
   }
+}
+
+function buildTOC(lang) {
+  const headings = document.querySelectorAll('.content h1, .content h2, .content h3, .content h4');
+  const toc = document.getElementById('toc');
+  toc.innerHTML = '';
+  tocData = [];
+
+  headings.forEach(h => {
+    if (!h.id) return;
+    const level = parseInt(h.tagName[1]);
+    const text = h.textContent;
+    tocData.push({ id: h.id, level, text });
+
+    const li = document.createElement('li');
+    li.className = 'toc-item';
+    const a = document.createElement('a');
+    a.className = 'toc-link h' + level;
+    a.href = '#' + h.id;
+    a.textContent = text;
+    a.onclick = (e) => {
+      e.preventDefault();
+      document.getElementById(h.id).scrollIntoView({ behavior: 'smooth' });
+      if (window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
+    };
+    li.appendChild(a);
+    toc.appendChild(li);
+  });
+}
+
+function updateActiveSection() {
+  const links = document.querySelectorAll('.toc-link');
+  if (!links.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const id = entry.target.id;
+        const match = document.querySelector(`.toc-link[href="#${id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px' });
+
+  document.querySelectorAll('.content h1, .content h2, .content h3').forEach(h => observer.observe(h));
 }
 
 function switchLang(lang) {
   if (lang === currentLang) return;
   currentLang = lang;
-
-  // Update buttons
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.lang === lang);
-  });
-
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
   loadContent(lang);
 }
 
-// Load default language
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// Close sidebar on click outside
+document.addEventListener('click', function(e) {
+  const sidebar = document.getElementById('sidebar');
+  const toggle = document.getElementById('sidebarToggle');
+  if (window.innerWidth <= 900 && sidebar.classList.contains('open') &&
+      !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+    sidebar.classList.remove('open');
+  }
+});
+
 loadContent('tr');
 </script>
-
 </body>
 </html>
